@@ -1,20 +1,6 @@
-import neopixels
 from utils import transcribe, estimateBaseFreq, dtw
 import sounddevice as sd
 from scipy.io import wavfile
-import time
-
-led_ring_address = '/dev/cu.usbmodem1421'
-led_ring = neopixels.NeoPixels(usb_port=led_ring_address)
-
-def test_led_ring(led_ring):
-    led_ring.lightify_mono(rgb=[0, 150, 0])
-    time.sleep(2)
-
-    led_ring.lightify_mono(rgb=[150, 0, 0])
-    time.sleep(2)
-
-    led_ring.lightify_mono(rgb=[0, 0, 0])
 
 
 def keylock(dur, Fs, original_key, thresh=3):
@@ -38,17 +24,19 @@ def keylock(dur, Fs, original_key, thresh=3):
     d = dtw(k[0], k[1])
 
     # put your desired action here!
-    result_light(d, thresh)
+    result_audio(d, thresh)
 
 
-def result_light(score, thresh):
+def result_audio(score, thresh):
 
     if score < thresh:
         print("OPEN SESAME! Score: {}".format(score))
-        led_ring.lightify_mono(rgb=[0, 150, 0])
-        time.sleep(1)
+        Fs, bell = wavfile.read("wav_files/bell_short.wav")
+        sd.play(bell, samplerate=Fs, blocking=True)
     else:
         print("WRONG! Score: {}".format(score))
+        Fs, buzzer = wavfile.read("wav_files/buzzer_short.wav")
+        sd.play(buzzer, samplerate=Fs, blocking=True)
 
 
 if __name__ == "__main__":
