@@ -2,3 +2,4 @@ sounddevice
 numpy
 scipy
 matplotlib
+pyserial

@@ -1,6 +1,12 @@
 from utils import transcribe, estimateBaseFreq, dtw
 import sounddevice as sd
 from scipy.io import wavfile
+import sys
+
+
+WHISTLE_PASSPHRASE = "wav_files/ppA.wav"  # you can also record your own! Record at 16 kHz
+DURATION = 3                              # length that you will record for input whistles
+THRESHOLD = 3                             # threshold after DTW comparison
 
 
 def keylock(dur, Fs, original_key, thresh=3):
@@ -41,14 +47,21 @@ def result_audio(score, thresh):
 
 if __name__ == "__main__":
 
+    python_version = 2
+    if sys.version_info > (3, 0):
+        python_version = 3
+
     # provide passphrase here
-    Fs, ppA = wavfile.read("wav_files/ppA.wav")
+    Fs, ppA = wavfile.read(WHISTLE_PASSPHRASE)
 
     while True:
         print('#' * 80)
         print("Press 'r + Enter' to record and 'q + Enter' to quit")
-        char = input()
+        if python_version == 2:
+            char = raw_input()
+        else:
+            char = input()
         if char == 'r':
-            keylock(3, Fs, ppA)
+            keylock(DURATION, Fs, ppA, thresh=THRESHOLD)
         elif char == 'q':
             break
